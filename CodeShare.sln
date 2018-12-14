@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeShare", "CodeShare\CodeShare.csproj", "{67169D36-FBF4-4A61-ADD1-40409F051045}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67169D36-FBF4-4A61-ADD1-40409F051045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67169D36-FBF4-4A61-ADD1-40409F051045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67169D36-FBF4-4A61-ADD1-40409F051045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67169D36-FBF4-4A61-ADD1-40409F051045}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4F93B27B-673A-46A2-B6C4-1B364F11195B}
+	EndGlobalSection
+EndGlobal
