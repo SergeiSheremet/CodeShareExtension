@@ -36,8 +36,8 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-      <Group guid="guidShareCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      <Group guid="guidShareCommandPackageCmdSet" id="SharingContextMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
       </Group>
     </Groups>
 
@@ -53,10 +53,10 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidShareCommandPackageCmdSet" id="ShareCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidShareCommandPackageCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpPic1" />
+        <Parent guid="guidShareCommandPackageCmdSet" id="SharingContextMenuGroup" />
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Invoke ShareCommand</ButtonText>
+          <ButtonText>Share Paste Via Telegram</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -78,7 +78,7 @@
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidShareCommandPackageCmdSet" value="{73742319-b6fc-4bda-8d77-f47630ce7ae1}">
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <IDSymbol name="SharingContextMenuGroup" value="0x1020" />
       <IDSymbol name="ShareCommandId" value="0x0100" />
     </GuidSymbol>
 
