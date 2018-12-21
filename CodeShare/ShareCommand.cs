@@ -1,10 +1,18 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeShare.Hosting;
+using CodeShare.Hosting.Implementation;
+using CodeShare.Model;
+using CodeShare.SocialNetwork;
+using CodeShare.SocialNetwork.Implementation;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
+using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeShare
@@ -27,43 +35,39 @@ namespace CodeShare
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly AsyncPackage package;
+        private readonly AsyncPackage _package;
+
+        public ICodeHosting Hosting { get; }
+        public ISocialNetwork SocialNetwork { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShareCommand"/> class.
-        /// Adds our command handlers for menu (commands must exist in the command table file)
+        /// Adds our co*-mmand handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
         private ShareCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
-            this.package = package ?? throw new ArgumentNullException(nameof(package));
+            _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
+            Hosting = new PasteBin();
+            SocialNetwork = new Vk();
+
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(this.Execute, menuCommandID);
+            var menuItem = new MenuCommand(Execute, menuCommandID);
             commandService.AddCommand(menuItem);
         }
 
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static ShareCommand Instance
-        {
-            get;
-            private set;
-        }
+        public static ShareCommand Instance { get; private set; }
 
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider
-        {
-            get
-            {
-                return this.package;
-            }
-        }
+        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider => _package;
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -75,7 +79,7 @@ namespace CodeShare
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            OleMenuCommandService commandService = await package.GetServiceAsync((typeof(IMenuCommandService))) as OleMenuCommandService;
+            OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Instance = new ShareCommand(package, commandService);
         }
 
@@ -89,17 +93,44 @@ namespace CodeShare
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
+            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", GetType().FullName);
             string title = "ShareCommand";
 
             // Show a message box to prove we were here
             VsShellUtilities.ShowMessageBox(
-                this.package,
+                _package,
                 message,
                 title,
                 OLEMSGICON.OLEMSGICON_INFO,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+
+            var textSelection = GetSelection(ServiceProvider);
+            //var url = Hosting.CreatePaste(textSelection.Text);
+            SocialNetwork.SendUrl(textSelection.Text);
+        }
+
+        //private void MenuItemCallback(object sender, EventArgs e)
+        //{
+        //    TextViewSelection selection = GetSelection(ServiceProvider);
+        //    string activeDocumentPath = GetActiveDocumentFilePath(ServiceProvider);
+        //    ShowAddDocumentationWindow(activeDocumentPath, selection);
+        //}
+
+        private TextViewSelection GetSelection(IAsyncServiceProvider serviceProvider)
+        {
+            var service = serviceProvider.GetServiceAsync(typeof(SVsTextManager)).Result;
+            var textManager = service as IVsTextManager2;
+            int result = textManager.GetActiveView2(1, null, (uint)_VIEWFRAMETYPE.vftCodeWindow, out var view);
+
+            view.GetSelection(out int startLine, out int startColumn, out int endLine, out int endColumn); // end could be before beginning
+            var start = new TextViewPosition(startLine, startColumn);
+            var end = new TextViewPosition(endLine, endColumn);
+
+            view.GetSelectedText(out string selectedText);
+
+            TextViewSelection selection = new TextViewSelection(start, end, selectedText);
+            return selection;
         }
     }
 }
