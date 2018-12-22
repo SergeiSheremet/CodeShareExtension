@@ -56,7 +56,7 @@
         <Parent guid="guidShareCommandPackageCmdSet" id="SharingContextMenuGroup" />
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Share Paste via Telegram</ButtonText>
+          <ButtonText>Share Code via Vk</ButtonText>
         </Strings>
       </Button>
     </Buttons>
