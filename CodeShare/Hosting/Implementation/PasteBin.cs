@@ -26,7 +26,7 @@ namespace CodeShare.Hosting.Implementation
             //TODO: clear json
         }
 
-        public string CreatePaste(string code, string title = null)
+        public string CreatePaste(TextViewSelection textSelection)
         {
             if (_user == null)
             {
@@ -35,8 +35,8 @@ namespace CodeShare.Hosting.Implementation
             }
 
             // TODO: language
-            Paste paste = _user.CreatePasteAsync(code, title, Language.Default, Visibility.Public, Expiration.Never).Result;
-            return paste.Url;
+            //Paste paste = _user.CreatePasteAsync(code, title, Language.Default, Visibility.Public, Expiration.Never).Result;
+            return null;//paste.Url;
         }
     }
 }

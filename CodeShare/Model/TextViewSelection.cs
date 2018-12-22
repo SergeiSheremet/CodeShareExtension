@@ -11,12 +11,14 @@ namespace CodeShare.Model
         public TextViewPosition StartPosition { get; set; }
         public TextViewPosition EndPosition { get; set; }
         public string Text { get; set; }
+        public string Filename { get; set; }
 
-        public TextViewSelection(TextViewPosition a, TextViewPosition b, string text)
+        public TextViewSelection(TextViewPosition a, TextViewPosition b, string text, string filename)
         {
             StartPosition = TextViewPosition.Min(a, b);
             EndPosition = TextViewPosition.Max(a, b);
             Text = text;
+            Filename = filename;
         }
     }
 }

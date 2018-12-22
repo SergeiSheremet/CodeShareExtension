@@ -11,7 +11,7 @@ namespace CodeShare.SocialNetwork.Implementation
     class Vk : ISocialNetwork
     {
         private readonly Vkontakte _vkLibrary;
-        private readonly string _accessTokenString =
+        private const string _accessTokenString = 
             "ee424c4bcc0208b1cdf71ca5d5def9749d302e42da78e6ba44b04c2f355a2e927ea83afd4c0c35831adde";
 
         public Vk()
@@ -29,9 +29,9 @@ namespace CodeShare.SocialNetwork.Implementation
             throw new NotImplementedException();
         }
 
-        public void SendUrl(string url)
+        public async void SendUrl(string url)
         {
-            var ok = _vkLibrary.Messages.Send(userId: 142477265, message: url).Result;
+            var ok = await _vkLibrary.Messages.Send(userId: 142477265, message: url);
         }
     }
 }

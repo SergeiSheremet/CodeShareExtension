@@ -51,7 +51,7 @@ namespace CodeShare
             _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
-            Hosting = new PasteBin();
+            Hosting = new GithubGists();
             SocialNetwork = new Vk();
 
             var menuCommandID = new CommandID(CommandSet, CommandId);
@@ -106,8 +106,8 @@ namespace CodeShare
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
             var textSelection = GetSelection(ServiceProvider);
-            //var url = Hosting.CreatePaste(textSelection.Text);
-            SocialNetwork.SendUrl(textSelection.Text);
+            var url = Hosting.CreatePaste(textSelection);
+            SocialNetwork.SendUrl(url);
         }
 
         //private void MenuItemCallback(object sender, EventArgs e)
@@ -129,7 +129,7 @@ namespace CodeShare
 
             view.GetSelectedText(out string selectedText);
 
-            TextViewSelection selection = new TextViewSelection(start, end, selectedText);
+            TextViewSelection selection = new TextViewSelection(start, end, selectedText, "1.cs");
             return selection;
         }
     }
