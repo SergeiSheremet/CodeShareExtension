@@ -9,6 +9,7 @@ using CodeShare.Hosting.Implementation;
 using CodeShare.Model;
 using CodeShare.SocialNetwork;
 using CodeShare.SocialNetwork.Implementation;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -93,43 +94,39 @@ namespace CodeShare
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", GetType().FullName);
-            string title = "ShareCommand";
+            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", GetType().FullName);
+            //string title = "ShareCommand";
 
             // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                _package,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            //VsShellUtilities.ShowMessageBox(
+            //    _package,
+            //    message,
+            //    title,
+            //    OLEMSGICON.OLEMSGICON_INFO,
+            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
             var textSelection = GetSelection(ServiceProvider);
             var url = Hosting.CreatePaste(textSelection);
             SocialNetwork.SendUrl(url);
         }
 
-        //private void MenuItemCallback(object sender, EventArgs e)
-        //{
-        //    TextViewSelection selection = GetSelection(ServiceProvider);
-        //    string activeDocumentPath = GetActiveDocumentFilePath(ServiceProvider);
-        //    ShowAddDocumentationWindow(activeDocumentPath, selection);
-        //}
-
         private TextViewSelection GetSelection(IAsyncServiceProvider serviceProvider)
         {
             var service = serviceProvider.GetServiceAsync(typeof(SVsTextManager)).Result;
             var textManager = service as IVsTextManager2;
-            int result = textManager.GetActiveView2(1, null, (uint)_VIEWFRAMETYPE.vftCodeWindow, out var view);
+            textManager.GetActiveView2(1, null, (uint)_VIEWFRAMETYPE.vftCodeWindow, out var view);
 
-            view.GetSelection(out int startLine, out int startColumn, out int endLine, out int endColumn); // end could be before beginning
+            view.GetSelection(out int startLine, out int startColumn, out int endLine, out int endColumn);
             var start = new TextViewPosition(startLine, startColumn);
             var end = new TextViewPosition(endLine, endColumn);
 
             view.GetSelectedText(out string selectedText);
 
-            TextViewSelection selection = new TextViewSelection(start, end, selectedText, "1.cs");
+            EnvDTE80.DTE2 applicationObject = serviceProvider.GetServiceAsync(typeof(DTE)).Result as EnvDTE80.DTE2;
+            string filename = applicationObject?.ActiveDocument.Name;
+
+            TextViewSelection selection = new TextViewSelection(start, end, selectedText, filename ?? "default.txt");
             return selection;
         }
     }

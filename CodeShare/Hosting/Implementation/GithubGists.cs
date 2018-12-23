@@ -14,7 +14,7 @@ namespace CodeShare.Hosting.Implementation
     class GithubGists : ICodeHosting
     {
         private readonly HttpClient _client;
-        private const string _accessToken =
+        private const string AccessToken =
             "62b04b1eae6379425796e4ca2fea282eb49e2aea";
 
         public GithubGists()
@@ -51,7 +51,7 @@ namespace CodeShare.Hosting.Implementation
 
             using (var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json"))
             {
-                var response = _client.PostAsync("https://api.github.com/gists?access_token=62b04b1eae6379425796e4ca2fea282eb49e2aea", httpContent).Result;
+                var response = _client.PostAsync($"https://api.github.com/gists?access_token={AccessToken}", httpContent).Result;
                 var responseAsString = response.Content.ReadAsStringAsync().Result;
                 var url = JObject.Parse(responseAsString)["html_url"].ToString();
                 return url;

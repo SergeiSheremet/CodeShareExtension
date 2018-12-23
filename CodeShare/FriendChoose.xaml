@@ -9,7 +9,7 @@
         d:DesignHeight="500" d:DesignWidth="600"
         Height="500" Width="350">
     <Grid>
-        <ListBox Name="ListBox" Margin="40,70,40,80">
+        <ListBox Name="ListBox" Margin="20,70,20,60">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -19,7 +19,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Click="Send"  Name="Button" Content="Send" Margin="0, 0, 40, 25" VerticalAlignment="Bottom" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="100" Height="25"/>
+        <Button Click="Send"  Name="Button" Content="Send" Margin="0, 0, 20, 15" VerticalAlignment="Bottom" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="100" Height="25"/>
         <Label Content="Send to" Margin="0,25,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="100"/>
     </Grid>
 </Window>
