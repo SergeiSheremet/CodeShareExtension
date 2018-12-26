@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CodeShare.Views;
 using EnvDTE;
+using Newtonsoft.Json;
 using VkLibrary.Core;
 using VkLibrary.Core.Auth;
 
@@ -12,17 +15,41 @@ namespace CodeShare.SocialNetwork.Implementation
     class Vk : ISocialNetwork
     {
         private readonly Vkontakte _vkLibrary;
-        private const string AccessToken = 
-            "ee424c4bcc0208b1cdf71ca5d5def9749d302e42da78e6ba44b04c2f355a2e927ea83afd4c0c35831adde";
-
+       
         public Vk()
         {
-            _vkLibrary = new Vkontakte(6793423, apiVersion: "5.80") {AccessToken = VkLibrary.Core.Auth.AccessToken.FromString(AccessToken)};
+            _vkLibrary = new Vkontakte(6793423, apiVersion: "5.80");
         }
 
-        public void LogIn(string login, string password)
+        public bool LogIn()
         {
-            throw new NotImplementedException();
+            if (_vkLibrary.AccessToken != null)
+            {
+                return true;
+            }
+
+            var filepath = Environment.CurrentDirectory.Replace(@"\bin\Debug", "") + @"\Resources\login.json";
+            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filepath));
+
+            if (jsonDictionary.ContainsKey("vk"))
+            {
+                _vkLibrary.AccessToken = AccessToken.FromString(jsonDictionary["vk"]);
+                return true;
+            }
+
+            var authWindow = new AuthWindow("VK");
+            authWindow.ShowDialog();
+
+            if (authWindow.AccessToken != null)
+            {
+                _vkLibrary.AccessToken = AccessToken.FromString(authWindow.AccessToken);
+                jsonDictionary.Add("vk", authWindow.AccessToken);
+                File.WriteAllText(filepath, JsonConvert.SerializeObject(jsonDictionary));
+
+                return true;
+            }
+
+            return false;
         }
 
         public void LogOut()
@@ -32,10 +59,15 @@ namespace CodeShare.SocialNetwork.Implementation
 
         public async void SendUrl(string url)
         {
+            if (!LogIn())
+            {
+                return;
+            }
+
             var friends = await _vkLibrary.Friends.Get();
-            Views.FriendChoose choiceWindow = new Views.FriendChoose {ListBox = {ItemsSource = friends.Items.OrderBy(x => x.FirstName)}};
+            FriendChoose choiceWindow = new FriendChoose { ListBox = {ItemsSource = friends.Items.OrderBy(x => x.FirstName)}};
             choiceWindow.ShowDialog();
-            //TODO: Test if window is closed
+
             var ok = await _vkLibrary.Messages.Send(userId: choiceWindow.SelectedId, message: url);
         }
     }

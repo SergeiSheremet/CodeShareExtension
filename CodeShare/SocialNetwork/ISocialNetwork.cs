@@ -8,7 +8,7 @@ namespace CodeShare.SocialNetwork
 {
     interface ISocialNetwork
     {
-        void LogIn(string login, string password);
+        bool LogIn();
         void LogOut();
         void SendUrl(string url);
     }

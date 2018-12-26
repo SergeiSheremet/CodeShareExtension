@@ -94,20 +94,15 @@ namespace CodeShare
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", GetType().FullName);
-            //string title = "ShareCommand";
-
-            // Show a message box to prove we were here
-            //VsShellUtilities.ShowMessageBox(
-            //    _package,
-            //    message,
-            //    title,
-            //    OLEMSGICON.OLEMSGICON_INFO,
-            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
             var textSelection = GetSelection(ServiceProvider);
             var url = Hosting.CreatePaste(textSelection);
+
+            if (url == null)
+            {
+                return;
+            }
+
             SocialNetwork.SendUrl(url);
         }
 

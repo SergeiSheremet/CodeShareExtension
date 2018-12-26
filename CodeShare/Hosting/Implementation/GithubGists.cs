@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using CodeShare.Model;
+using CodeShare.Views;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VkLibrary.Core.Auth;
 
 namespace CodeShare.Hosting.Implementation
 {
     class GithubGists : ICodeHosting
     {
         private readonly HttpClient _client;
-        private string _accessToken =
-            "62b04b1eae6379425796e4ca2fea282eb49e2aea";
+        private string _accessToken;
 
         public GithubGists()
         {
@@ -23,15 +25,35 @@ namespace CodeShare.Hosting.Implementation
             _client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Mozilla", "5.0"));
         }
 
-        public void LogIn(string login, string password)
+        public bool LogIn()
         {
-            throw new NotImplementedException();
-        }
+            if (_accessToken != null)
+            {
+                return true;
+            }
 
-        public void LogIn(string accessToken)
-        {
-            //TODO: check that token is ok
-            _accessToken = accessToken;
+            var filepath = Environment.CurrentDirectory.Replace(@"\bin\Debug", "") + @"\Resources\login.json";
+            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filepath));
+
+            if (jsonDictionary.ContainsKey("gists"))
+            {
+                _accessToken = jsonDictionary["gists"];
+                return true;
+            }
+
+            var authWindow = new AuthWindow("Gists");
+            authWindow.ShowDialog();
+
+            if (authWindow.AccessToken != null)
+            {
+                _accessToken = authWindow.AccessToken;
+                jsonDictionary.Add("gists", authWindow.AccessToken);
+                File.WriteAllText(filepath, JsonConvert.SerializeObject(jsonDictionary));
+
+                return true;
+            }
+
+            return false;
         }
 
         public void LogOut()
@@ -41,6 +63,11 @@ namespace CodeShare.Hosting.Implementation
 
         public string CreatePaste(TextViewSelection textSelection)
         {
+            if (!LogIn())
+            {
+                return null;
+            }
+
             var data = new GistsRequestData
             {
                 Description = $"From Line {textSelection.StartPosition.Line} Column {textSelection.StartPosition.Column} to Line {textSelection.EndPosition.Line} Column {textSelection.EndPosition.Line}",

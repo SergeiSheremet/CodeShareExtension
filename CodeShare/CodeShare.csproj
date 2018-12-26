@@ -57,11 +57,9 @@
   <ItemGroup>
     <Compile Include="Hosting\ICodeHosting.cs" />
     <Compile Include="Hosting\Implementation\GithubGists.cs" />
-    <Compile Include="Model\LoginInfo.cs" />
     <Compile Include="Model\GistsRequestData.cs" />
     <Compile Include="Model\TextViewPosition.cs" />
     <Compile Include="Model\TextViewSelection.cs" />
-    <Compile Include="Hosting\Implementation\PasteBin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
