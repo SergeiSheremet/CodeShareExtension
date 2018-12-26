@@ -16,54 +16,59 @@ namespace CodeShare.Hosting.Implementation
 {
     class GithubGists : ICodeHosting
     {
+        private readonly string _storagePath;
         private readonly HttpClient _client;
         private string _accessToken;
+        public bool IsAuthorized { get; private set; }
 
         public GithubGists()
         {
+            _storagePath = Environment.CurrentDirectory.Replace(@"\bin\Debug", "") + @"\Resources\login.json";
+
             _client = new HttpClient();
             _client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Mozilla", "5.0"));
+
+            _accessToken = CheckStorage();
+            IsAuthorized = _accessToken != null;
         }
 
         public bool LogIn()
         {
-            if (_accessToken != null)
-            {
-                return true;
-            }
-
-            var filepath = Environment.CurrentDirectory.Replace(@"\bin\Debug", "") + @"\Resources\login.json";
-            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filepath));
-
-            if (jsonDictionary.ContainsKey("gists"))
-            {
-                _accessToken = jsonDictionary["gists"];
-                return true;
-            }
-
             var authWindow = new AuthWindow("Gists");
             authWindow.ShowDialog();
 
             if (authWindow.AccessToken != null)
             {
                 _accessToken = authWindow.AccessToken;
-                jsonDictionary.Add("gists", authWindow.AccessToken);
-                File.WriteAllText(filepath, JsonConvert.SerializeObject(jsonDictionary));
 
-                return true;
+                var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(_storagePath));
+                jsonDictionary.Add("gists", authWindow.AccessToken);
+                File.WriteAllText(_storagePath, JsonConvert.SerializeObject(jsonDictionary));
+
+                IsAuthorized = true;
+                return IsAuthorized;
             }
 
-            return false;
+            return IsAuthorized;
         }
 
         public void LogOut()
         {
-            throw new NotImplementedException();
+            _accessToken = null;
+            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(_storagePath));
+
+            if (jsonDictionary.ContainsKey("vk"))
+            {
+                jsonDictionary.Remove("vk");
+                File.WriteAllText(_storagePath, JsonConvert.SerializeObject(jsonDictionary));
+            }
+
+            IsAuthorized = false;
         }
 
         public string CreatePaste(TextViewSelection textSelection)
         {
-            if (!LogIn())
+            if (!IsAuthorized && !LogIn())
             {
                 return null;
             }
@@ -89,6 +94,13 @@ namespace CodeShare.Hosting.Implementation
                 var url = JObject.Parse(responseAsString)["html_url"].ToString();
                 return url;
             }
+        }
+
+        private string CheckStorage()
+        {
+            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(_storagePath));
+
+            return jsonDictionary.ContainsKey("gists") ? jsonDictionary["gists"] : null;
         }
     }
 }

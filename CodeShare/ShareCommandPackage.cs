@@ -70,6 +70,7 @@ namespace CodeShare
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await ShareCommand.InitializeAsync(this);
+            await AuthToolbar.InitializeAsync(this);
         }
 
         #endregion

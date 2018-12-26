@@ -95,15 +95,22 @@ namespace CodeShare
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var textSelection = GetSelection(ServiceProvider);
-            var url = Hosting.CreatePaste(textSelection);
-
-            if (url == null)
+            try
             {
-                return;
-            }
+                var textSelection = GetSelection(ServiceProvider);
+                var url = Hosting.CreatePaste(textSelection);
 
-            SocialNetwork.SendUrl(url);
+                if (url == null)
+                {
+                    return;
+                }
+
+                SocialNetwork.SendUrl(url);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private TextViewSelection GetSelection(IAsyncServiceProvider serviceProvider)

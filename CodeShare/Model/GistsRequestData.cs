@@ -20,6 +20,4 @@ namespace CodeShare.Model
             public string Content { get; set; }
         }
     }
-
-
 }

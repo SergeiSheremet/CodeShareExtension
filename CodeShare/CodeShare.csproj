@@ -55,6 +55,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AuthToolbar.cs" />
     <Compile Include="Hosting\ICodeHosting.cs" />
     <Compile Include="Hosting\Implementation\GithubGists.cs" />
     <Compile Include="Model\GistsRequestData.cs" />
@@ -70,6 +71,9 @@
     <Compile Include="ShareCommandPackage.cs" />
     <Compile Include="SocialNetwork\Implementation\Vk.cs" />
     <Compile Include="SocialNetwork\ISocialNetwork.cs" />
+    <Compile Include="Views\AuthOverview.xaml.cs">
+      <DependentUpon>AuthOverview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\FriendChoose.xaml.cs">
       <DependentUpon>FriendChoose.xaml</DependentUpon>
     </Compile>
@@ -88,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="index.html" />
+    <Content Include="Resources\AuthToolbar.png" />
     <Content Include="VkLibrary.Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -360,6 +365,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\AuthOverview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FriendChoose.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -15,36 +15,30 @@ namespace CodeShare.SocialNetwork.Implementation
     class Vk : ISocialNetwork
     {
         private readonly Vkontakte _vkLibrary;
-       
+        private readonly string _storagePath;
+        public bool IsAuthorized { get; private set; }
+
         public Vk()
         {
+            _storagePath = Environment.CurrentDirectory.Replace(@"\bin\Debug", "") + @"\Resources\login.json";
             _vkLibrary = new Vkontakte(6793423, apiVersion: "5.80");
+
+            _vkLibrary.AccessToken = AccessToken.FromString(CheckStorage());
+            IsAuthorized = _vkLibrary.AccessToken.Token != null;
         }
 
         public bool LogIn()
         {
-            if (_vkLibrary.AccessToken != null)
-            {
-                return true;
-            }
-
-            var filepath = Environment.CurrentDirectory.Replace(@"\bin\Debug", "") + @"\Resources\login.json";
-            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filepath));
-
-            if (jsonDictionary.ContainsKey("vk"))
-            {
-                _vkLibrary.AccessToken = AccessToken.FromString(jsonDictionary["vk"]);
-                return true;
-            }
-
             var authWindow = new AuthWindow("VK");
             authWindow.ShowDialog();
 
             if (authWindow.AccessToken != null)
             {
                 _vkLibrary.AccessToken = AccessToken.FromString(authWindow.AccessToken);
+
+                var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(_storagePath));
                 jsonDictionary.Add("vk", authWindow.AccessToken);
-                File.WriteAllText(filepath, JsonConvert.SerializeObject(jsonDictionary));
+                File.WriteAllText(_storagePath, JsonConvert.SerializeObject(jsonDictionary));
 
                 return true;
             }
@@ -59,7 +53,7 @@ namespace CodeShare.SocialNetwork.Implementation
 
         public async void SendUrl(string url)
         {
-            if (!LogIn())
+            if (!IsAuthorized && !LogIn())
             {
                 return;
             }
@@ -69,6 +63,13 @@ namespace CodeShare.SocialNetwork.Implementation
             choiceWindow.ShowDialog();
 
             var ok = await _vkLibrary.Messages.Send(userId: choiceWindow.SelectedId, message: url);
+        }
+
+        private string CheckStorage()
+        {
+            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(_storagePath));
+
+            return jsonDictionary.ContainsKey("vk") ? jsonDictionary["vk"] : null;
         }
     }
 }
