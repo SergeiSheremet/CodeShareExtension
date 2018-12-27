@@ -75,6 +75,9 @@
     <Compile Include="FriendChoose.xaml.cs">
       <DependentUpon>FriendChoose.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\AuthWindow.xaml.cs">
+      <DependentUpon>AuthWindow.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -360,6 +363,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="FriendChoose.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AuthWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
