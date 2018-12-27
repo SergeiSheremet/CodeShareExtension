@@ -33,7 +33,7 @@ namespace CodeShare.SocialNetwork.Implementation
         public async void SendUrl(string url)
         {
             var friends = await _vkLibrary.Friends.Get();
-            FriendChoose choiceWindow = new FriendChoose {ListBox = {ItemsSource = friends.Items.OrderBy(x => x.FirstName)}};
+            Views.FriendChoose choiceWindow = new Views.FriendChoose {ListBox = {ItemsSource = friends.Items.OrderBy(x => x.FirstName)}};
             choiceWindow.ShowDialog();
             //TODO: Test if window is closed
             var ok = await _vkLibrary.Messages.Send(userId: choiceWindow.SelectedId, message: url);

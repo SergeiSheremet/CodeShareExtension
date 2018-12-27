@@ -72,7 +72,7 @@
     <Compile Include="ShareCommandPackage.cs" />
     <Compile Include="SocialNetwork\Implementation\Vk.cs" />
     <Compile Include="SocialNetwork\ISocialNetwork.cs" />
-    <Compile Include="FriendChoose.xaml.cs">
+    <Compile Include="Views\FriendChoose.xaml.cs">
       <DependentUpon>FriendChoose.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AuthWindow.xaml.cs">
@@ -362,7 +362,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="FriendChoose.xaml">
+    <Page Include="Views\FriendChoose.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
